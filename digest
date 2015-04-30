@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [ $(date +%a) == "Mon" ]; then
+    ADJUSTMENT="-4d"
+else
+    ADJUSTMENT="-2d"
+fi
+
+QUERY="type:ticket%20created_at>$(date -v "${ADJUSTMENT}" "+%Y-%m-%d")"
+SEPERATOR="\n------------------------------------------------------------------------------------------------------\n"
+
+curl -u ${ZENDESK_USER}/token:${ZENDESK_API_TOKEN} \
+     https://pensionwise.zendesk.com/api/v2/search.json?query=${QUERY} \
+     | jq -r ".results[] | .description, \"${SEPERATOR}\""
